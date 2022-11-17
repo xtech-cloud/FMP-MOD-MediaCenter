@@ -28,6 +28,6 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
         /// data["uri"] = "bundle/_resource/1.mc";
         /// model.Publish(/XTC/MediaCenter/Inlay, data);
         /// </example>
-        public const string Refresh = "/XTC/MediaCenter/Inlay";
+        public const string Refresh = "/XTC/MediaCenter/Refresh";
     }
 }
