@@ -25,7 +25,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
         /// var data = new Dictionary<string, object>();
         /// data["uid"] = "default";
         /// data["source"] = "assloud://";
-        /// data["uri"] = "bundle/content/_resource/1.mc";
+        /// data["uri"] = "bundle/_resource/1.mc";
         /// model.Publish(/XTC/MediaCenter/Inlay, data);
         /// </example>
         public const string Refresh = "/XTC/MediaCenter/Inlay";

@@ -22,6 +22,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
         {
             base.setup();
             addSubscriber(MySubject.Inlay, handleInlay);
+            addSubscriber(MySubject.Refresh, handleRefresh);
         }
 
         private void handleInlay(LibMVCS.Model.Status _status, object _data)
@@ -54,6 +55,34 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                 rt.sizeDelta = Vector2.zero;
                 _instance.rootUI.SetActive(true);
             });
+        }
+
+        private void handleRefresh(LibMVCS.Model.Status _status, object _data)
+        {
+            getLogger().Debug("handle refresh of {0} with data: {1}", MyEntryBase.ModuleName, JsonConvert.SerializeObject(_data));
+
+            string uid = "";
+            string source = "";
+            string uri = "";
+            try
+            {
+                Dictionary<string, object> data = _data as Dictionary<string, object>;
+                uid = data["uid"] as string;
+                source = data["source"] as string;
+                uri = data["uri"] as string;
+            }
+            catch (Exception ex)
+            {
+                getLogger().Exception(ex);
+            }
+            MyInstance instance;
+            runtime.instances.TryGetValue(uid, out instance);
+            if(null == instance)
+            {
+                getLogger().Error("instance is null");
+                return;
+            }
+            instance.HandleOpened(source, uri);
         }
     }
 }
