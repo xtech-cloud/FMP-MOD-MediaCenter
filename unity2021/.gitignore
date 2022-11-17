@@ -1,0 +1,19 @@
+
+/_dist_/
+/_build_/
+/MediaCenter/Assets/TextMesh Pro/
+/MediaCenter/Assets/TextMesh Pro.meta
+/MediaCenter/Assets/Plugins/
+/MediaCenter/Assets/Plugins.meta
+/MediaCenter/Assets/3rd/
+/MediaCenter/Assets/3rd.meta
+/MediaCenter/Library/
+/MediaCenter/obj/
+/MediaCenter/Logs/
+/MediaCenter/Temp/
+/MediaCenter/UserSettings/
+/MediaCenter/*.sln
+/MediaCenter/*.csproj
+/MediaCenter/.vsconfig
+/MediaCenter/.vs/
+/.UNITY_HOME.env
