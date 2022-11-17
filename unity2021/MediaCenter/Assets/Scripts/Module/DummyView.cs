@@ -26,7 +26,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
 
         private void handleInlay(LibMVCS.Model.Status _status, object _data)
         {
-            getLogger().Debug("handle inlay  with data: {1}", MyEntryBase.ModuleName, JsonConvert.SerializeObject(_data));
+            getLogger().Debug("handle inlay of {0}", MyEntryBase.ModuleName);
 
             string uid = "";
             string style = "";
@@ -42,6 +42,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             {
                 getLogger().Exception(ex);
             }
+            getLogger().Debug("uid is {0}, style is {1}, slot is {2}", uid, style, slot.ToString());
             runtime.CreateInstanceAsync(uid, style, (_instance) =>
             {
                 _instance.rootUI.transform.SetParent(slot.transform);
