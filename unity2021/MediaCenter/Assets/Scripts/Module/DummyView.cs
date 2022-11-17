@@ -52,6 +52,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                 RectTransform rt = _instance.rootUI.GetComponent<RectTransform>();
                 rt.anchoredPosition = Vector2.zero;
                 rt.sizeDelta = Vector2.zero;
+                _instance.rootUI.SetActive(true);
             });
         }
     }
