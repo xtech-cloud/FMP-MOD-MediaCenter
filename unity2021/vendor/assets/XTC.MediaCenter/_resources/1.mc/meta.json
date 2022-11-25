@@ -37,8 +37,8 @@
         },
         {
             "thumbnail": "thumbnail-4.jpg",
-            "file": "8.jpg",
-            "summary": "this is summary of 4.jpg"
+            "file": "test.mp4",
+            "summary": "this is summary of test.mp4"
         }
     ]
 }

@@ -1,7 +1,5 @@
-
-
+using System.IO;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using LibMVCS = XTC.FMP.LIB.MVCS;
@@ -21,9 +19,12 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
         {
             public class Entry
             {
-                public string thumbnail;
-                public string file;
-                public string summary;
+                public string _source = "";
+                public Color _imageColor = Color.white;
+                public string _text = "";
+                public string thumbnail = "";
+                public string file = "";
+                public string summary = "";
             }
             public Entry[] entryS = new Entry[0];
         }
@@ -54,12 +55,26 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
         private bool viewerContainerVisible = false;
         private MetaSchema metaSchema_;
         private int activeEntry_;
+        private Dictionary<string, System.Action<string>> openHandlerS_ = new Dictionary<string, System.Action<string>>();
 
         private ImageViewer viewerImage_;
+        private VideoViewer viewerVideo_;
+
+        /// <summary>
+        /// 本地文件对象池，管理从本地目录中加载到内存中的对象
+        /// </summary>
+        /// <remarks>
+        /// 在实例打开(Open)时准备，在实例关闭(Close)时清理
+        /// </remarks>
+        private ObjectsPool fileObjectsPool_;
+        private FileReader fileReader_;
 
         public MyInstance(string _uid, string _style, MyConfig _config, MyCatalog _catalog, LibMVCS.Logger _logger, Dictionary<string, LibMVCS.Any> _settings, MyEntryBase _entry, MonoBehaviour _mono, GameObject _rootAttachments)
             : base(_uid, _style, _config, _catalog, _logger, _settings, _entry, _mono, _rootAttachments)
         {
+            openHandlerS_["assloud://"] = openResourceWithAssloud;
+            openHandlerS_["file://"] = openResourceWithFile;
+            fileObjectsPool_ = new ObjectsPool(this.uid + ".File", logger_);
         }
 
         /// <summary>
@@ -71,6 +86,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
         public void HandleCreated()
         {
             contentReader_ = new ContentReader(contentObjectsPool);
+            fileReader_ = new FileReader(fileObjectsPool_);
             contentReader_.AssetRootPath = settings_["path.assets"].AsString();
 
             uiReference_.homePage = rootUI.transform.Find("Home");
@@ -87,7 +103,9 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             uiReference_.viewerEntry.gameObject.SetActive(false);
             uiReference_.summary = rootUI.transform.Find("Viewer/Summary");
             viewerImage_ = new ImageViewer();
-            viewerImage_.Setup(rootUI, contentReader_);
+            viewerImage_.Setup(rootUI, contentReader_, fileReader_);
+            viewerVideo_ = new VideoViewer();
+            viewerVideo_.Setup(mono_, rootUI, contentReader_, fileReader_);
 
             bindEvents();
         }
@@ -99,6 +117,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
         {
             contentReader_ = null;
             viewerImage_ = null;
+            viewerVideo_ = null;
         }
 
         /// <summary>
@@ -113,9 +132,21 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             uiReference_.viewerPage.gameObject.SetActive(false);
             rootUI.gameObject.SetActive(true);
             viewerContainerVisible = false;
+
+            fileObjectsPool_.Prepare();
+
             viewerImage_.HandleInstanceOpened();
+            viewerVideo_.HandleInstanceOpened();
             switchViewerContainerVisible();
-            openResource(_source, _uri);
+            System.Action<string> handler;
+            if (openHandlerS_.TryGetValue(_source, out handler))
+            {
+                handler(_uri);
+            }
+            else
+            {
+                logger_.Error("none handler to open the source: {0}", _source);
+            }
         }
 
         /// <summary>
@@ -134,6 +165,8 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                 GameObject.DestroyImmediate(obj);
             }
             uiReference_.viewerEntryCloneS.Clear();
+
+            fileObjectsPool_.Dispose();
         }
 
         private void bindEvents()
@@ -155,19 +188,55 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                 viewerContainerVisible = false;
                 switchViewerContainerVisible();
             };
+            viewerVideo_.onRendererClick = () =>
+            {
+                viewerContainerVisible = false;
+                switchViewerContainerVisible();
+            };
         }
 
-        private void openResource(string _source, string _uri)
+        private void openResourceWithAssloud(string _uri)
         {
             contentReader_.ContentUri = _uri;
             contentReader_.LoadText("meta.json", (_bytes) =>
             {
                 metaSchema_ = JsonConvert.DeserializeObject<MetaSchema>(System.Text.Encoding.UTF8.GetString(_bytes));
+                foreach (var entry in metaSchema_.entryS)
+                {
+                    entry._source = "assloud://";
+                    entry._text = "";
+                    entry._imageColor = Color.white;
+                }
                 parseMeta(metaSchema_);
             }, () =>
             {
 
             });
+        }
+
+        private void openResourceWithFile(string _uri)
+        {
+
+            List<MetaSchema.Entry> entryS = new List<MetaSchema.Entry>();
+            foreach (var file in Directory.GetFiles(_uri))
+            {
+                string extension = Path.GetExtension(file);
+                if (!viewerImage_.IsExtensionMatch(extension) && !viewerVideo_.IsExtensionMatch(extension))
+                {
+                    continue;
+                }
+                var entry = new MetaSchema.Entry();
+                entryS.Add(entry);
+                entry.summary = "";
+                entry.thumbnail = "";
+                entry._text = Path.GetFileName(file);
+                entry._source = "file://";
+                entry._imageColor = Color.gray;
+                entry.file = file;
+            }
+            metaSchema_ = new MetaSchema();
+            metaSchema_.entryS = entryS.ToArray();
+            parseMeta(metaSchema_);
         }
 
         private void parseMeta(MetaSchema _meta)
@@ -181,29 +250,39 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                 uiReference_.homeEntryCloneS.Add(cloneHomeEntry);
                 cloneHomeEntry.name = entry.file;
                 cloneHomeEntry.gameObject.SetActive(true);
+                cloneHomeEntry.transform.Find("text").gameObject.SetActive(!string.IsNullOrEmpty(entry._text));
+                cloneHomeEntry.transform.Find("text").GetComponent<Text>().text = entry._text;
                 cloneHomeEntry.transform.Find("mark-image").gameObject.SetActive(viewerImage_.IsExtensionMatch(extension));
+                cloneHomeEntry.transform.Find("mark-video").gameObject.SetActive(viewerVideo_.IsExtensionMatch(extension));
+                cloneHomeEntry.GetComponent<RawImage>().color = entry._imageColor;
                 var cloneViewerEntry = GameObject.Instantiate(uiReference_.homeEntry.gameObject, uiReference_.viewerEntry.parent);
                 uiReference_.viewerEntryCloneS.Add(cloneViewerEntry);
                 cloneViewerEntry.name = entry.file;
                 cloneViewerEntry.gameObject.SetActive(true);
-                contentReader_.LoadTexture(entry.thumbnail, (_texture) =>
+                cloneViewerEntry.transform.Find("text").gameObject.SetActive(!string.IsNullOrEmpty(entry._text));
+                cloneViewerEntry.transform.Find("text").GetComponent<Text>().text = entry._text;
+                cloneViewerEntry.GetComponent<RawImage>().color = entry._imageColor;
+                cloneHomeEntry.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    cloneHomeEntry.GetComponent<RawImage>().texture = _texture;
-                    cloneHomeEntry.GetComponent<Button>().onClick.AddListener(() =>
-                    {
-                        activeEntry_ = index;
-                        onHomeEntryClick();
-                    });
-                    cloneViewerEntry.GetComponent<RawImage>().texture = _texture;
-                    cloneViewerEntry.GetComponent<Button>().onClick.AddListener(() =>
-                    {
-                        activeEntry_ = index;
-                        onViewerEntryClick();
-                    });
-                }, () =>
-                {
-
+                    activeEntry_ = index;
+                    onHomeEntryClick();
                 });
+                cloneViewerEntry.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    activeEntry_ = index;
+                    onViewerEntryClick();
+                });
+                if (!string.IsNullOrEmpty(entry.thumbnail))
+                {
+                    contentReader_.LoadTexture(entry.thumbnail, (_texture) =>
+                    {
+                        cloneHomeEntry.GetComponent<RawImage>().texture = _texture;
+                        cloneViewerEntry.GetComponent<RawImage>().texture = _texture;
+                    }, () =>
+                    {
+
+                    });
+                }
             }
             uiReference_.activeMark.SetAsLastSibling();
         }
@@ -242,9 +321,15 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             uiReference_.summary.Find("text").GetComponent<Text>().text = entry.summary;
             uiReference_.summary.gameObject.SetActive(!string.IsNullOrEmpty(entry.summary));
             string extension = System.IO.Path.GetExtension(entry.file);
+            viewerImage_.CloseEntry();
+            viewerVideo_.CloseEntry();
             if (viewerImage_.IsExtensionMatch(extension))
             {
-                viewerImage_.OpenEntry(entry.file);
+                viewerImage_.OpenEntry(entry._source, entry.file);
+            }
+            else if (viewerVideo_.IsExtensionMatch(extension))
+            {
+                viewerVideo_.OpenEntry(entry._source, entry.file);
             }
         }
 

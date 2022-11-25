@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
     {
         public class UiReference
         {
+            public GameObject pending;
             /// <summary>
             /// 图片浏览器的面板
             /// </summary>
@@ -28,13 +30,17 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
 
         private UiReference uiReference_ = new UiReference();
         private ContentReader contentReader_;
+        private FileReader fileReader_;
         private Vector2 originSizeDelta_;
         private float scale_;
+        private List<string> extensionS_ = new List<string>() { ".jpg", ".jpeg", ".png" };
 
-        public void Setup(GameObject _instanceRootUi, ContentReader _contentReader)
+        public void Setup(GameObject _instanceRootUi, ContentReader _contentReader, FileReader _fileReader)
         {
             contentReader_ = _contentReader;
+            fileReader_ = _fileReader;
 
+            uiReference_.pending = _instanceRootUi.transform.Find("Viewer/pending").gameObject;
             uiReference_.panel = _instanceRootUi.transform.Find("Viewer/ImageViewer");
             uiReference_.renderer = _instanceRootUi.transform.Find("Viewer/ImageViewer/Viewport/Content").GetComponent<RawImage>();
             uiReference_.toolbar = _instanceRootUi.transform.Find("Viewer/container/ToolBar/ImageViewer");
@@ -74,24 +80,50 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             uiReference_.toolbar.gameObject.SetActive(false);
         }
 
-        public void OpenEntry(string _file)
+        public void OpenEntry(string _source, string _file)
         {
-            uiReference_.panel.gameObject.SetActive(true);
+            uiReference_.pending.SetActive(true);
+            uiReference_.panel.gameObject.SetActive(false);
             uiReference_.toolbar.gameObject.SetActive(false);
-            contentReader_.LoadTexture(_file, (_texture) =>
+            if (_source == "assloud://")
             {
-                uiReference_.renderer.texture = _texture;
-                uiReference_.renderer.SetNativeSize();
-                fitImage();
-            }, () =>
-            {
+                contentReader_.LoadTexture(_file, (_texture) =>
+                {
+                    uiReference_.renderer.texture = _texture;
+                    uiReference_.renderer.SetNativeSize();
+                    fitImage();
+                    uiReference_.pending.SetActive(false);
+                    uiReference_.panel.gameObject.SetActive(true);
+                }, () =>
+                {
 
-            });
+                });
+            }
+            else if (_source == "file://")
+            {
+                fileReader_.LoadTexture(_file, (_texture) =>
+                {
+                    uiReference_.renderer.texture = _texture;
+                    uiReference_.renderer.SetNativeSize();
+                    fitImage();
+                    uiReference_.pending.SetActive(false);
+                    uiReference_.panel.gameObject.SetActive(true);
+                }, () =>
+                {
+
+                });
+            }
+        }
+
+        public void CloseEntry()
+        {
+            uiReference_.panel.gameObject.SetActive(false);
+            uiReference_.toolbar.gameObject.SetActive(false);
         }
 
         public bool IsExtensionMatch(string _extension)
         {
-            return _extension.ToLower() == ".jpg";
+            return extensionS_.Contains(_extension.ToLower());
         }
 
         private void fitImage()
