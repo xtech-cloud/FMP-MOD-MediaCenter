@@ -4,7 +4,6 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using RenderHeads.Media.AVProVideo;
-using Unity.VisualScripting;
 using System.Collections;
 
 namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
@@ -54,8 +53,8 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             uiReference_.pending = _instanceRootUi.transform.Find("Viewer/pending").gameObject;
             uiReference_.panel = _instanceRootUi.transform.Find("Viewer/VideoViewer");
             uiReference_.renderer = _instanceRootUi.transform.Find("Viewer/VideoViewer/renderer");
-            uiReference_._mediaPlayer = uiReference_.panel.AddComponent<MediaPlayer>();
-            uiReference_._displayUGUI = uiReference_.renderer.AddComponent<DisplayUGUI>();
+            uiReference_._mediaPlayer = uiReference_.panel.gameObject.AddComponent<MediaPlayer>();
+            uiReference_._displayUGUI = uiReference_.renderer.gameObject.AddComponent<DisplayUGUI>();
             uiReference_.toolbar = _instanceRootUi.transform.Find("Viewer/container/ToolBar/VideoViewer");
             uiReference_.textTime = uiReference_.toolbar.Find("textTime").GetComponent<Text>();
 
