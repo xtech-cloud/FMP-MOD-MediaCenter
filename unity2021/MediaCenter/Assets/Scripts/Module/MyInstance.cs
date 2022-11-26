@@ -15,6 +15,14 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
     /// </summary>
     public class MyInstance : MyInstanceBase
     {
+        public enum Filter
+        {
+            ALL,
+            IMAGE,
+            VIDEO,
+            DOCUMENT
+        }
+
         public class MetaSchema
         {
             public class Entry
@@ -37,7 +45,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public Transform viewerEntry;
             public Button btnBack;
             public Button btnFold;
-            public Transform summary;
+            public ScrollRect summary;
             /// <summary>
             /// 浏览器的容器
             /// </summary>
@@ -45,6 +53,11 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public Button btnPrev;
             public Button btnNext;
             public RectTransform activeMark;
+
+            public Toggle tgTabAll;
+            public Toggle tgTabImage;
+            public Toggle tgTabVideo;
+            public Toggle tgTabDocument;
 
             public List<GameObject> homeEntryCloneS = new List<GameObject>();
             public List<GameObject> viewerEntryCloneS = new List<GameObject>();
@@ -54,7 +67,8 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
         private UiReference uiReference_ = new UiReference();
         private bool viewerContainerVisible = false;
         private MetaSchema metaSchema_;
-        private int activeEntry_;
+        private MetaSchema.Entry activeEntry_;
+        private List<MetaSchema.Entry> filterEntryS = new List<MetaSchema.Entry>();
         private Dictionary<string, System.Action<string>> openHandlerS_ = new Dictionary<string, System.Action<string>>();
 
         private ImageViewer viewerImage_;
@@ -68,6 +82,10 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
         /// </remarks>
         private ObjectsPool fileObjectsPool_;
         private FileReader fileReader_;
+
+        private Coroutine coroutineScrollSummary_;
+        private float summaryBeginDelayTimer_;
+        private float summaryEndDelayTimer_;
 
         public MyInstance(string _uid, string _style, MyConfig _config, MyCatalog _catalog, LibMVCS.Logger _logger, Dictionary<string, LibMVCS.Any> _settings, MyEntryBase _entry, MonoBehaviour _mono, GameObject _rootAttachments)
             : base(_uid, _style, _config, _catalog, _logger, _settings, _entry, _mono, _rootAttachments)
@@ -101,12 +119,17 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             uiReference_.btnNext = rootUI.transform.Find("Viewer/btnNext").GetComponent<Button>();
             uiReference_.homeEntry.gameObject.SetActive(false);
             uiReference_.viewerEntry.gameObject.SetActive(false);
-            uiReference_.summary = rootUI.transform.Find("Viewer/Summary");
+            uiReference_.summary = rootUI.transform.Find("Viewer/Summary").GetComponent<ScrollRect>();
+            uiReference_.tgTabAll = rootUI.transform.Find("Home/tabbar/tgAll").GetComponent<Toggle>();
+            uiReference_.tgTabImage = rootUI.transform.Find("Home/tabbar/tgImage").GetComponent<Toggle>();
+            uiReference_.tgTabVideo = rootUI.transform.Find("Home/tabbar/tgVideo").GetComponent<Toggle>();
+            uiReference_.tgTabDocument = rootUI.transform.Find("Home/tabbar/tgDocument").GetComponent<Toggle>();
             viewerImage_ = new ImageViewer();
             viewerImage_.Setup(rootUI, contentReader_, fileReader_);
             viewerVideo_ = new VideoViewer();
             viewerVideo_.Setup(mono_, rootUI, contentReader_, fileReader_);
 
+            applyStyle();
             bindEvents();
         }
 
@@ -147,6 +170,8 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             {
                 logger_.Error("none handler to open the source: {0}", _source);
             }
+
+            coroutineScrollSummary_ = mono_.StartCoroutine(scrollSummary());
         }
 
         /// <summary>
@@ -167,7 +192,31 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             uiReference_.viewerEntryCloneS.Clear();
 
             fileObjectsPool_.Dispose();
+
+            if (null != coroutineScrollSummary_)
+            {
+                mono_.StopCoroutine(coroutineScrollSummary_);
+                coroutineScrollSummary_ = null;
+            }
         }
+
+        private void applyStyle()
+        {
+            Color primaryColor;
+            if (!ColorUtility.TryParseHtmlString(style_.primaryColor, out primaryColor))
+            {
+                primaryColor = Color.white;
+            }
+            rootUI.transform.Find("Viewer/pending").GetComponent<RawImage>().color = primaryColor;
+            uiReference_.tgTabAll.transform.Find("Background/Checkmark").GetComponent<RawImage>().color = primaryColor;
+            uiReference_.tgTabImage.transform.Find("Background/Checkmark").GetComponent<RawImage>().color = primaryColor;
+            uiReference_.tgTabVideo.transform.Find("Background/Checkmark").GetComponent<RawImage>().color = primaryColor;
+            uiReference_.tgTabDocument.transform.Find("Background/Checkmark").GetComponent<RawImage>().color = primaryColor;
+            uiReference_.viewerPage.Find("container/ToolBar/VideoViewer/sdSeeker/Fill Area/Fill").GetComponent<Image>().color = primaryColor;
+            uiReference_.viewerPage.Find("container/ToolBar/VideoViewer/sdSeeker/Handle Slide Area/Handle").GetComponent<Image>().color = primaryColor;
+            uiReference_.viewerPage.Find("container/ToolBar/VideoViewer/sdVolume/Fill Area/Fill").GetComponent<Image>().color = primaryColor;
+        }
+
 
         private void bindEvents()
         {
@@ -193,6 +242,30 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                 viewerContainerVisible = false;
                 switchViewerContainerVisible();
             };
+            uiReference_.tgTabAll.onValueChanged.AddListener((_toggled) =>
+            {
+                if (!_toggled)
+                    return;
+                filterEntry(Filter.ALL);
+            });
+            uiReference_.tgTabImage.onValueChanged.AddListener((_toggled) =>
+            {
+                if (!_toggled)
+                    return;
+                filterEntry(Filter.IMAGE);
+            });
+            uiReference_.tgTabVideo.onValueChanged.AddListener((_toggled) =>
+            {
+                if (!_toggled)
+                    return;
+                filterEntry(Filter.VIDEO);
+            });
+            uiReference_.tgTabDocument.onValueChanged.AddListener((_toggled) =>
+            {
+                if (!_toggled)
+                    return;
+                filterEntry(Filter.DOCUMENT);
+            });
         }
 
         private void openResourceWithAssloud(string _uri)
@@ -264,12 +337,12 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                 cloneViewerEntry.GetComponent<RawImage>().color = entry._imageColor;
                 cloneHomeEntry.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    activeEntry_ = index;
+                    activeEntry_ = entry;
                     onHomeEntryClick();
                 });
                 cloneViewerEntry.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    activeEntry_ = index;
+                    activeEntry_ = entry;
                     onViewerEntryClick();
                 });
                 if (!string.IsNullOrEmpty(entry.thumbnail))
@@ -285,6 +358,8 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                 }
             }
             uiReference_.activeMark.SetAsLastSibling();
+            filterEntryS.Clear();
+            filterEntryS.AddRange(metaSchema_.entryS);
         }
 
         private void onHomeEntryClick()
@@ -317,43 +392,129 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
         private void openEntry()
         {
             mono_.StartCoroutine(markActive());
-            var entry = metaSchema_.entryS[activeEntry_];
-            uiReference_.summary.Find("text").GetComponent<Text>().text = entry.summary;
-            uiReference_.summary.gameObject.SetActive(!string.IsNullOrEmpty(entry.summary));
-            string extension = System.IO.Path.GetExtension(entry.file);
+            int index = filterEntryS.IndexOf(activeEntry_);
+            uiReference_.btnPrev.interactable = index > 0;
+            uiReference_.btnNext.interactable = index >= 0 && index < filterEntryS.Count - 1;
+
+            uiReference_.summary.transform.Find("Viewport/Content/text").GetComponent<Text>().text = activeEntry_.summary;
+            uiReference_.summary.gameObject.SetActive(!string.IsNullOrEmpty(activeEntry_.summary));
+            summaryBeginDelayTimer_ = 0f;
+            summaryEndDelayTimer_ = 0f;
+
+            string extension = System.IO.Path.GetExtension(activeEntry_.file);
             viewerImage_.CloseEntry();
             viewerVideo_.CloseEntry();
             if (viewerImage_.IsExtensionMatch(extension))
             {
-                viewerImage_.OpenEntry(entry._source, entry.file);
+                viewerImage_.OpenEntry(activeEntry_._source, activeEntry_.file);
             }
             else if (viewerVideo_.IsExtensionMatch(extension))
             {
-                viewerVideo_.OpenEntry(entry._source, entry.file);
+                viewerVideo_.OpenEntry(activeEntry_._source, activeEntry_.file);
             }
         }
 
 
         private void openPrevEntry()
         {
-            activeEntry_ -= 1;
-            if (activeEntry_ < 0)
-                activeEntry_ = 0;
+            int index = filterEntryS.IndexOf(activeEntry_);
+            if (index < 0)
+                return;
+            index -= 1;
+            if (index < 0)
+                index = 0;
+            activeEntry_ = filterEntryS[index];
             openEntry();
         }
 
         private void openNextEntry()
         {
-            activeEntry_ += 1;
-            if (activeEntry_ >= metaSchema_.entryS.Length)
-                activeEntry_ = metaSchema_.entryS.Length - 1;
+            int index = filterEntryS.IndexOf(activeEntry_);
+            if (index < 0)
+                return;
+
+            index += 1;
+            if (index >= filterEntryS.Count)
+                index = filterEntryS.Count - 1;
+            activeEntry_ = filterEntryS[index];
             openEntry();
         }
 
         private IEnumerator markActive()
         {
             yield return new WaitForEndOfFrame();
-            uiReference_.activeMark.anchoredPosition = uiReference_.viewerEntry.parent.GetChild(activeEntry_ + 1).GetComponent<RectTransform>().anchoredPosition;
+            uiReference_.activeMark.anchoredPosition = uiReference_.viewerEntry.parent.Find(activeEntry_.file).GetComponent<RectTransform>().anchoredPosition;
+        }
+
+        private void filterEntry(Filter _filter)
+        {
+            filterEntryS.Clear();
+            foreach (var entry in metaSchema_.entryS)
+            {
+                string extension = Path.GetExtension(entry.file);
+                bool visible = false;
+                if (viewerImage_.IsExtensionMatch(extension))
+                {
+                    visible = Filter.ALL == _filter || Filter.IMAGE == _filter;
+                }
+                else if (viewerVideo_.IsExtensionMatch(extension))
+                {
+                    visible = Filter.ALL == _filter || Filter.VIDEO == _filter;
+                }
+                var homeEntry = uiReference_.homeEntryCloneS.Find((_item) =>
+                {
+                    return _item.name == entry.file;
+                });
+                if (null != homeEntry)
+                {
+                    homeEntry.SetActive(visible);
+                }
+                var viewerEntry = uiReference_.viewerEntryCloneS.Find((_item) =>
+                {
+                    return _item.name == entry.file;
+                });
+                if (null != viewerEntry)
+                {
+                    viewerEntry.SetActive(visible);
+                }
+                if (visible)
+                {
+                    filterEntryS.Add(entry);
+                }
+            }
+        }
+
+        private IEnumerator scrollSummary()
+        {
+            RectTransform rectTransform = uiReference_.summary.GetComponent<RectTransform>();
+            while (true)
+            {
+                yield return new WaitForEndOfFrame();
+                summaryBeginDelayTimer_ += Time.deltaTime;
+                if (summaryBeginDelayTimer_ < style_.summary.beginDelay)
+                {
+                    uiReference_.summary.horizontalNormalizedPosition = 0;
+                    continue;
+                }
+                float duration = rectTransform.rect.width / style_.summary.speed;
+                float offset = Time.deltaTime / duration;
+                float value = uiReference_.summary.horizontalNormalizedPosition;
+                value += offset;
+                if (value > 1)
+                {
+                    summaryEndDelayTimer_ += Time.deltaTime;
+                    if (summaryEndDelayTimer_ < style_.summary.endDelay)
+                    {
+                        continue;
+                    }
+                    value = 0;
+                    summaryBeginDelayTimer_ = 0f;
+                    summaryEndDelayTimer_ = 0f;
+                }
+
+                uiReference_.summary.horizontalNormalizedPosition = value;
+            }
+
         }
     }
 }

@@ -201,6 +201,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             if (null != uiReference_._mediaPlayer.Control)
             {
                 uiReference_._mediaPlayer.Control.Stop();
+                uiReference_._mediaPlayer.Control.Rewind();
             }
             uiReference_.btnPlay.gameObject.SetActive(true);
             uiReference_.btnPause.gameObject.SetActive(false);
@@ -247,16 +248,16 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                     uiReference_.seeker.value = d;
 
                     int leftMS = (int)(uiReference_._mediaPlayer.Info.GetDurationMs() - uiReference_._mediaPlayer.Control.GetCurrentTimeMs());
-                    int left = leftMS == 0 ? 0 : leftMS / 1000 + 1;
+                    int left = leftMS <= 0 ? 0 : leftMS / 1000 + 1;
                     uiReference_.textTime.text = string.Format("{0:D2}:{1:D2}:{2:D2}", left / (60 * 60), left / 60, left % 60);
                     if (leftMS <= 0)
                     {
                         uiReference_.textTime.text = "00:00:00";
-                        stop();
+                        break;
                     }
                 }
             }
-
+            stop();
         }
 
 
