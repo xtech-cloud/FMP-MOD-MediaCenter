@@ -16,11 +16,28 @@
       Summary.beginDelay: 开始滚动前的延迟时间
       Summary.endDelay: 结束滚动后的延时时间
       Summary.speed: 滚动速度
+      HomeContainer: 主页容器
+      HomeContainer.Padding:  节点与容器的边距
+      HomeContainer.CellSize: 节点的尺寸
+      HomeContainer.Spacing:  节点间的间隔
+      HomeContainer: 浏览器容器
+      HomeContainer.Padding:  节点与容器的边距
+      HomeContainer.CellSize: 节点的尺寸
+      HomeContainer.Spacing:  节点间的间隔
     -->
   <Styles>
     <Style name="default" primaryColor="#DAB757FF">
-      <Summary beginDelay="5" endDelay="5" speed="30">
-      </Summary>
+      <Summary beginDelay="5" endDelay="5" speed="30"/>
+      <HomeContainer row="3">
+        <Padding left="36" right="36" top="36" bottom="36"/>
+        <CellSize width="300" height="300"/>
+        <Spaceing x="16" y="16"/>
+      </HomeContainer>
+      <ViewerContainer>
+        <Padding left="24" right="24" top="24" bottom="24"/>
+        <CellSize width="128" height="128"/>
+        <Spaceing x="16" y="16"/>
+      </ViewerContainer>
     </Style>
   </Styles>
   <!-- 预创建的实例列表

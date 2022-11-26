@@ -215,6 +215,26 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             uiReference_.viewerPage.Find("container/ToolBar/VideoViewer/sdSeeker/Fill Area/Fill").GetComponent<Image>().color = primaryColor;
             uiReference_.viewerPage.Find("container/ToolBar/VideoViewer/sdSeeker/Handle Slide Area/Handle").GetComponent<Image>().color = primaryColor;
             uiReference_.viewerPage.Find("container/ToolBar/VideoViewer/sdVolume/Fill Area/Fill").GetComponent<Image>().color = primaryColor;
+
+            var glgHomeContainer = uiReference_.homeEntry.parent.GetComponent<GridLayoutGroup>();
+            glgHomeContainer.padding.left = style_.homeContainer.padding.left;
+            glgHomeContainer.padding.right = style_.homeContainer.padding.right;
+            glgHomeContainer.padding.top = style_.homeContainer.padding.top;
+            glgHomeContainer.padding.bottom = style_.homeContainer.padding.bottom;
+            glgHomeContainer.cellSize = new Vector2(style_.homeContainer.cellSize.width, style_.homeContainer.cellSize.height);
+            glgHomeContainer.spacing = new Vector2(style_.homeContainer.spacing.x, style_.homeContainer.spacing.y);
+            glgHomeContainer.constraintCount = style_.homeContainer.row;
+
+            var glgViewerContainer = uiReference_.viewerEntry.parent.GetComponent<GridLayoutGroup>();
+            glgViewerContainer.padding.left = style_.viewerContainer.padding.left;
+            glgViewerContainer.padding.right = style_.viewerContainer.padding.right;
+            glgViewerContainer.padding.top = style_.viewerContainer.padding.top;
+            glgViewerContainer.padding.bottom = style_.viewerContainer.padding.bottom;
+            glgViewerContainer.cellSize = new Vector2(style_.viewerContainer.cellSize.width, style_.viewerContainer.cellSize.height);
+            glgViewerContainer.spacing = new Vector2(style_.viewerContainer.spacing.x, style_.viewerContainer.spacing.y);
+            var sizeDeltaViewerContainer = uiReference_.viewerContainer.sizeDelta;
+            sizeDeltaViewerContainer.y = style_.viewerContainer.padding.top + style_.viewerContainer.padding.bottom + style_.viewerContainer.cellSize.height;
+            uiReference_.viewerContainer.sizeDelta = sizeDeltaViewerContainer;
         }
 
 
