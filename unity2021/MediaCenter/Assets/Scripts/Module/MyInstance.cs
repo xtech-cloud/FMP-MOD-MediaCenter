@@ -86,6 +86,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
         private Coroutine coroutineScrollSummary_;
         private float summaryBeginDelayTimer_;
         private float summaryEndDelayTimer_;
+        private bool isOpened_ = false;
 
         public MyInstance(string _uid, string _style, MyConfig _config, MyCatalog _catalog, LibMVCS.Logger _logger, Dictionary<string, LibMVCS.Any> _settings, MyEntryBase _entry, MonoBehaviour _mono, GameObject _rootAttachments)
             : base(_uid, _style, _config, _catalog, _logger, _settings, _entry, _mono, _rootAttachments)
@@ -151,6 +152,9 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
         /// </remarks>
         public void HandleOpened(string _source, string _uri)
         {
+            if (isOpened_)
+                return;
+            isOpened_ = true;
             uiReference_.homePage.gameObject.SetActive(true);
             uiReference_.viewerPage.gameObject.SetActive(false);
             rootUI.gameObject.SetActive(true);
@@ -179,6 +183,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
         /// </summary>
         public void HandleClosed()
         {
+            isOpened_ = false;
             rootUI.gameObject.SetActive(false);
             foreach (var obj in uiReference_.homeEntryCloneS)
             {
