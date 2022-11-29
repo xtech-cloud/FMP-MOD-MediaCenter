@@ -24,6 +24,7 @@
       HomeContainer.Padding:  节点与容器的边距
       HomeContainer.CellSize: 节点的尺寸
       HomeContainer.Spacing:  节点间的间隔
+      ToolBar.VideoProgress.width:  视频进度条长度
     -->
   <Styles>
     <Style name="default" primaryColor="#DAB757FF">
@@ -38,6 +39,9 @@
         <CellSize width="128" height="128"/>
         <Spaceing x="16" y="16"/>
       </ViewerContainer>
+      <ToolBar>
+        <VideoProgress width="300"/>
+      </ToolBar>
     </Style>
   </Styles>
   <!-- 预创建的实例列表

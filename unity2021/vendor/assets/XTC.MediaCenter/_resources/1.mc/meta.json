@@ -39,16 +39,6 @@
             "thumbnail": "thumbnail-4.jpg",
             "file": "test.mp4",
             "summary": "this is summary of test.mp4"
-        },
-        {
-            "thumbnail": "thumbnail-4.jpg",
-            "file": "test1.mp4",
-            "summary": "this is summary of test.mp4"
-        },
-        {
-            "thumbnail": "thumbnail-4.jpg",
-            "file": "test2.mp4",
-            "summary": "this is summary of test.mp4"
         }
     ]
 }

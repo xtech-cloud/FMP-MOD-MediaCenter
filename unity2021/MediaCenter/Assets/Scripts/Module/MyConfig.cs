@@ -68,6 +68,18 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public float speed { get; set; } = 30;
         }
 
+        public class VideoProgress
+        {
+            [XmlAttribute("width")]
+            public int width { get; set; } = 100;
+        }
+
+        public class ToolBar
+        {
+            [XmlElement("VideoProgress")]
+            public VideoProgress videoProgress { get; set; } = new VideoProgress();
+        }
+
         public class Style
         {
             [XmlAttribute("name")]
@@ -80,6 +92,9 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public HomeContainer homeContainer { get; set; } = new HomeContainer();
             [XmlElement("ViewerContainer")]
             public ViewerContainer viewerContainer { get; set; } = new ViewerContainer();
+
+            [XmlElement("ToolBar")]
+            public ToolBar toolBar { get; set; } = new ToolBar();
         }
 
 

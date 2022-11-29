@@ -220,6 +220,10 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             uiReference_.viewerPage.Find("container/ToolBar/VideoViewer/sdSeeker/Fill Area/Fill").GetComponent<Image>().color = primaryColor;
             uiReference_.viewerPage.Find("container/ToolBar/VideoViewer/sdSeeker/Handle Slide Area/Handle").GetComponent<Image>().color = primaryColor;
             uiReference_.viewerPage.Find("container/ToolBar/VideoViewer/sdVolume/Fill Area/Fill").GetComponent<Image>().color = primaryColor;
+            {
+                var rectTransform = uiReference_.viewerPage.Find("container/ToolBar/VideoViewer/sdSeeker").GetComponent<RectTransform>();
+                rectTransform.sizeDelta = new Vector2(style_.toolBar.videoProgress.width, rectTransform.sizeDelta.y);
+            }
 
             var glgHomeContainer = uiReference_.homeEntry.parent.GetComponent<GridLayoutGroup>();
             glgHomeContainer.padding.left = style_.homeContainer.padding.left;
