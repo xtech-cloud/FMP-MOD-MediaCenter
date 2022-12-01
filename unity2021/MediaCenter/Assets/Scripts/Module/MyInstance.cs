@@ -59,6 +59,8 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public Toggle tgTabVideo;
             public Toggle tgTabDocument;
 
+            public Button btnVideoLoop;
+
             public List<GameObject> homeEntryCloneS = new List<GameObject>();
             public List<GameObject> viewerEntryCloneS = new List<GameObject>();
         }
@@ -128,7 +130,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             viewerImage_ = new ImageViewer();
             viewerImage_.Setup(rootUI, contentReader_, fileReader_);
             viewerVideo_ = new VideoViewer();
-            viewerVideo_.Setup(mono_, rootUI, contentReader_, fileReader_);
+            viewerVideo_.Setup(mono_, rootUI, contentReader_, fileReader_, style_);
 
             applyStyle();
             bindEvents();

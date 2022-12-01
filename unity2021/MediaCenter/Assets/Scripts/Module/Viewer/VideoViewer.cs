@@ -28,6 +28,9 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public Button btnPlay;
             public Button btnPause;
 
+            public Button btnLoopNone;
+            public Button btnLoopSingle;
+
             public MediaPlayer _mediaPlayer;
             public DisplayUGUI _displayUGUI;
         }
@@ -43,8 +46,9 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
         private float videoSeekValue_;
         private float volumeAppearTimer_;
         private Coroutine coroutineUpdate_;
+        private string loopMode_ = "none";
 
-        public void Setup(MonoBehaviour _mono, GameObject _instanceRootUi, ContentReader _contentReader, FileReader _fileReader)
+        public void Setup(MonoBehaviour _mono, GameObject _instanceRootUi, ContentReader _contentReader, FileReader _fileReader, MyConfig.Style _style)
         {
             mono_ = _mono;
             contentReader_ = _contentReader;
@@ -133,6 +137,25 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             });
             uiReference_.volume.value = 1.0f;
 
+            loopMode_ = _style.toolBar.videoLoop.mode;
+
+            uiReference_.btnLoopNone = uiReference_.toolbar.transform.Find("btnLoopNone").GetComponent<UnityEngine.UI.Button>();
+            uiReference_.btnLoopNone.gameObject.SetActive(_style.toolBar.videoLoop.visible && loopMode_ == "none");
+            uiReference_.btnLoopSingle = uiReference_.toolbar.transform.Find("btnLoopSingle").GetComponent<UnityEngine.UI.Button>();
+            uiReference_.btnLoopSingle.gameObject.SetActive(_style.toolBar.videoLoop.visible && loopMode_ == "single");
+
+            uiReference_.btnLoopNone.onClick.AddListener(() =>
+            {
+                loopMode_ = "single";
+                switchLoopMode();
+                uiReference_._mediaPlayer.Control.SetLooping(true);
+            });
+            uiReference_.btnLoopSingle.onClick.AddListener(() =>
+            {
+                loopMode_ = "none";
+                switchLoopMode();
+                uiReference_._mediaPlayer.Control.SetLooping(false);
+            });
         }
 
         /// <summary>
@@ -252,7 +275,10 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                     if (leftMS <= 0)
                     {
                         uiReference_.textTime.text = "00:00:00";
-                        break;
+                        if (!uiReference_._mediaPlayer.Control.IsLooping())
+                        {
+                            break;
+                        }
                     }
                 }
             }
@@ -270,6 +296,12 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                 volumeAppearTimer_ += UnityEngine.Time.deltaTime;
             }
             uiReference_.volume.gameObject.SetActive(false);
+        }
+
+        private void switchLoopMode()
+        {
+            uiReference_.btnLoopNone.gameObject.SetActive(loopMode_ == "none");
+            uiReference_.btnLoopSingle.gameObject.SetActive(loopMode_ == "single");
         }
     }
 }

@@ -25,6 +25,8 @@
       HomeContainer.CellSize: 节点的尺寸
       HomeContainer.Spacing:  节点间的间隔
       ToolBar.VideoProgress.width:  视频进度条长度
+      ToolBar.VideoLoop.mode:  视频初始循环模式，可选值为（none, single）
+      ToolBar.VideoLoop.visible:  视频循环按钮是否可见
     -->
   <Styles>
     <Style name="default" primaryColor="#DAB757FF">
@@ -41,6 +43,7 @@
       </ViewerContainer>
       <ToolBar>
         <VideoProgress width="300"/>
+        <VideoLoop mode="none" visible="false"/>
       </ToolBar>
     </Style>
   </Styles>

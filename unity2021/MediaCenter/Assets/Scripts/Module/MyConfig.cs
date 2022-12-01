@@ -74,10 +74,20 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public int width { get; set; } = 100;
         }
 
+        public class VideoLoop
+        {
+            [XmlAttribute("mode")]
+            public string mode { get; set; } = "none";
+            [XmlAttribute("visible")]
+            public bool visible { get; set; } = false;
+        }
+
         public class ToolBar
         {
             [XmlElement("VideoProgress")]
             public VideoProgress videoProgress { get; set; } = new VideoProgress();
+            [XmlElement("VideoLoop")]
+            public VideoLoop videoLoop { get; set; } = new VideoLoop();
         }
 
         public class Style
