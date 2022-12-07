@@ -50,9 +50,10 @@
   <!-- 预创建的实例列表
       uid: 实例的唯一ID
       style: 使用的样式名
+      uiSlot: ui的挂载路径
     -->
   <Instances>
-    <Instance uid="default" style="default"/>
+    <Instance uid="default" style="default" uiSlot=""/>
   </Instances>
   <!-- 预加载 -->
   <Preload>
