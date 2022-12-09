@@ -90,12 +90,22 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public VideoLoop videoLoop { get; set; } = new VideoLoop();
         }
 
+        public class Background
+        {
+            [XmlAttribute("visible")]
+            public bool visible { get; set; } = true;
+            [XmlAttribute("image")]
+            public string image { get; set; } = "";
+        }
+
         public class Style
         {
             [XmlAttribute("name")]
             public string name { get; set; } = "";
             [XmlAttribute("primaryColor")]
             public string primaryColor { get; set; } = "";
+            [XmlElement("PageHomeBackground")]
+            public Background pageHomeBackground { get; set; } = new Background();
             [XmlElement("Summary")]
             public Summary summary { get; set; } = new Summary();
             [XmlElement("HomeContainer")]

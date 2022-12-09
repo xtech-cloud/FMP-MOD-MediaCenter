@@ -12,6 +12,7 @@
   <!-- 样式列表
       name: 名称
       primaryColor: 主色系
+      PageHomeBackground: 主页背景
       Summary: 简介说明文字
       Summary.beginDelay: 开始滚动前的延迟时间
       Summary.endDelay: 结束滚动后的延时时间
@@ -30,6 +31,7 @@
     -->
   <Styles>
     <Style name="default" primaryColor="#DAB757FF">
+      <PageHomeBackground visible="true" image="pageHome_background_default.png"/>
       <Summary beginDelay="5" endDelay="5" speed="30"/>
       <HomeContainer row="3">
         <Padding left="36" right="36" top="36" bottom="36"/>

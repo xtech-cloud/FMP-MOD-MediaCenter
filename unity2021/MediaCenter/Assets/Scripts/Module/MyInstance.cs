@@ -7,6 +7,7 @@ using XTC.FMP.MOD.MediaCenter.LIB.Proto;
 using XTC.FMP.MOD.MediaCenter.LIB.MVCS;
 using Newtonsoft.Json;
 using System.Collections;
+using System;
 
 namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
 {
@@ -39,6 +40,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
 
         public class UiReference
         {
+            public RawImage pageHomeBackground;
             public Transform homePage;
             public Transform homeEntry;
             public Transform viewerPage;
@@ -110,6 +112,8 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             fileReader_ = new FileReader(fileObjectsPool_);
             contentReader_.AssetRootPath = settings_["path.assets"].AsString();
 
+            uiReference_.pageHomeBackground = rootUI.transform.Find("bg").GetComponent<RawImage>();
+            uiReference_.pageHomeBackground.gameObject.SetActive(style_.pageHomeBackground.visible);
             uiReference_.homePage = rootUI.transform.Find("Home");
             uiReference_.viewerPage = rootUI.transform.Find("Viewer");
             uiReference_.homeEntry = rootUI.transform.Find("Home/container/Viewport/Content/entry");
@@ -246,6 +250,18 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             var sizeDeltaViewerContainer = uiReference_.viewerContainer.sizeDelta;
             sizeDeltaViewerContainer.y = style_.viewerContainer.padding.top + style_.viewerContainer.padding.bottom + style_.viewerContainer.cellSize.height;
             uiReference_.viewerContainer.sizeDelta = sizeDeltaViewerContainer;
+
+            Action<string, RawImage> loadTheme = (_image, _target) =>
+            {
+                if (!string.IsNullOrEmpty(_image))
+                {
+                    loadTextureFromTheme(_image, (_texture) =>
+                    {
+                        _target.texture = _texture;
+                    }, () => { });
+                }
+            };
+            loadTheme(style_.pageHomeBackground.image, uiReference_.pageHomeBackground);
         }
 
 
