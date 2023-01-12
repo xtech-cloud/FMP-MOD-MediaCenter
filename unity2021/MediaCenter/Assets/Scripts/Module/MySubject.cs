@@ -7,13 +7,14 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
         /// 嵌入
         /// </summary>
         /// <remarks>
-        /// 创建后挂载到slot中，并打开内容
+        /// 创建后挂载到slot中
         /// </remarks>
         /// <example>
         /// var data = new Dictionary<string, object>();
         /// data["uid"] = "default";
         /// data["style"] = "default";
-        /// data["slot"] = a instance of UnityEngine.GameObejct;
+        /// data["uiSlot"] = a instance of UnityEngine.GameObejct;
+        /// data["worldSlot"] = a instance of UnityEngine.GameObejct;
         /// model.Publish(/XTC/MediaCenter/Inlay, data);
         /// </example>
         public const string Inlay = "/XTC/MediaCenter/Inlay";

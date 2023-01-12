@@ -31,22 +31,24 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
 
             string uid = "";
             string style = "";
-            GameObject slot = null;
+            GameObject uiSlot = null;
+            GameObject worldSlot = null;
             try
             {
                 Dictionary<string, object> data = _data as Dictionary<string, object>;
                 uid = (string)data["uid"];
                 style = (string)data["style"];
-                slot = data["slot"] as GameObject;
+                uiSlot = data["uiSlot"] as GameObject;
+                worldSlot = data["worldSlot"] as GameObject;
             }
             catch (Exception ex)
             {
                 getLogger().Exception(ex);
             }
-            getLogger().Debug("uid is {0}, style is {1}, slot is {2}", uid, style, slot.ToString());
+            getLogger().Debug("uid is {0}, style is {1}, uiSlot is {2}, worldSlot is {3}", uid, style, uiSlot.ToString(), worldSlot.ToString());
             runtime.CreateInstanceAsync(uid, style, "", "", (_instance) =>
             {
-                _instance.rootUI.transform.SetParent(slot.transform);
+                _instance.rootUI.transform.SetParent(uiSlot.transform);
                 _instance.rootUI.transform.localPosition = Vector3.zero;
                 _instance.rootUI.transform.localRotation = Quaternion.identity;
                 _instance.rootUI.transform.localScale = Vector3.one;
@@ -54,6 +56,12 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                 rt.anchoredPosition = Vector2.zero;
                 rt.sizeDelta = Vector2.zero;
                 _instance.rootUI.SetActive(true);
+
+                _instance.rootWorld.transform.SetParent(worldSlot.transform);
+                _instance.rootWorld.transform.localPosition = Vector3.zero;
+                _instance.rootWorld.transform.localRotation = Quaternion.identity;
+                _instance.rootWorld.transform.localScale = Vector3.one;
+                _instance.rootWorld.SetActive(true);
             });
         }
 
