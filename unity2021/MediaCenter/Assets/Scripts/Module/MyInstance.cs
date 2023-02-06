@@ -361,6 +361,9 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
 
         private void parseMeta(MetaSchema _meta)
         {
+            int imageCount = 0;
+            int videoCount = 0;
+            int documentCount = 0;
             for (int i = 0; i < _meta.entryS.Length; ++i)
             {
                 var index = i;
@@ -403,10 +406,29 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
 
                     });
                 }
+
+                if (viewerImage_.IsExtensionMatch(extension))
+                    imageCount += 1;
+                else if (viewerVideo_.IsExtensionMatch(extension))
+                    videoCount += 1;
             }
             uiReference_.activeMark.SetAsLastSibling();
             filterEntryS.Clear();
             filterEntryS.AddRange(metaSchema_.entryS);
+
+            System.Action<int, string, GameObject> setTabVisible = (_entryCount, _visible, _target) =>
+            {
+                if (_visible == "auto")
+                    _target.SetActive(_entryCount > 0);
+                else if (_visible == "alwaysShow")
+                    _target.SetActive(true);
+                else
+                    _target.SetActive(false);
+            };
+
+            setTabVisible(imageCount, style_.pageTabbar.image.visible, uiReference_.tgTabImage.gameObject);
+            setTabVisible(videoCount, style_.pageTabbar.video.visible, uiReference_.tgTabVideo.gameObject);
+            setTabVisible(documentCount, style_.pageTabbar.document.visible, uiReference_.tgTabDocument.gameObject);
         }
 
         private void onHomeEntryClick()

@@ -107,6 +107,37 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public string image { get; set; } = "";
         }
 
+        public class PageTab
+        {
+            [XmlAttribute("visible")]
+            public string visible { get; set; } = "";
+        }
+
+        public class PageTabImage : PageTab
+        {
+
+        }
+
+        public class PageTabVideo : PageTab
+        {
+
+        }
+
+        public class PageTabDocument : PageTab
+        {
+
+        }
+
+        public class PageTabbar
+        {
+            [XmlElement("PageTabImage")]
+            public PageTabImage image { get; set; } = new PageTabImage();
+            [XmlElement("PageTabVideo")]
+            public PageTabVideo video { get; set; } = new PageTabVideo();
+            [XmlElement("PageTabDocument")]
+            public PageTabDocument document { get; set; } = new PageTabDocument();
+        }
+
         public class Style
         {
             [XmlAttribute("name")]
@@ -115,6 +146,8 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public string primaryColor { get; set; } = "";
             [XmlElement("PageHomeBackground")]
             public Background pageHomeBackground { get; set; } = new Background();
+            [XmlElement("PageTabbar")]
+            public PageTabbar pageTabbar { get; set; } = new PageTabbar();
             [XmlElement("Summary")]
             public Summary summary { get; set; } = new Summary();
             [XmlElement("HomeContainer")]
