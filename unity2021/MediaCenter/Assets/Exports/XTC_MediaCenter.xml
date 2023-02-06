@@ -28,6 +28,7 @@
       ToolBar.VideoProgress.width:  视频进度条长度
       ToolBar.VideoLoop.mode:  视频初始循环模式，可选值为（none, single）
       ToolBar.VideoLoop.visible:  视频循环按钮是否可见
+      ToolBar.VideoAction.drag:  是否允许视频进度条拖动操作
     -->
   <Styles>
     <Style name="default" primaryColor="#DAB757FF">
@@ -46,6 +47,7 @@
       <ToolBar>
         <VideoProgress width="300"/>
         <VideoLoop mode="none" visible="false"/>
+        <VideoAction drag="false"/>
       </ToolBar>
     </Style>
   </Styles>

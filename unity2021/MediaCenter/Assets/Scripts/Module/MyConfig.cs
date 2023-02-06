@@ -74,6 +74,13 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public int width { get; set; } = 100;
         }
 
+        public class VideoAction
+        {
+            [XmlAttribute("drag")]
+            public bool drag { get; set; } = false;
+        }
+
+
         public class VideoLoop
         {
             [XmlAttribute("mode")]
@@ -88,6 +95,8 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public VideoProgress videoProgress { get; set; } = new VideoProgress();
             [XmlElement("VideoLoop")]
             public VideoLoop videoLoop { get; set; } = new VideoLoop();
+            [XmlElement("VideoAction")]
+            public VideoAction videoAction { get; set; } = new VideoAction();
         }
 
         public class Background

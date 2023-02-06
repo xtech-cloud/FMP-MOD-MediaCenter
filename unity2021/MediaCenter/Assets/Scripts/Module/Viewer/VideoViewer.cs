@@ -77,27 +77,31 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
 
             uiReference_.seeker = uiReference_.toolbar.transform.Find("sdSeeker").GetComponent<UnityEngine.UI.Slider>();
             UnityEngine.EventSystems.EventTrigger eventTrigger = uiReference_.seeker.gameObject.AddComponent<UnityEngine.EventSystems.EventTrigger>();
-            // 创建开始拖拽事件
-            UnityEngine.EventSystems.EventTrigger.Entry entryBeginDrag = new UnityEngine.EventSystems.EventTrigger.Entry();
-            entryBeginDrag.eventID = UnityEngine.EventSystems.EventTriggerType.BeginDrag;
-            entryBeginDrag.callback.AddListener((_e) =>
+            if (_style.toolBar.videoAction.drag)
             {
-                onSeekerBeginDrag();
-            });
-            eventTrigger.triggers.Add(entryBeginDrag);
+                // 创建开始拖拽事件
+                UnityEngine.EventSystems.EventTrigger.Entry entryBeginDrag = new UnityEngine.EventSystems.EventTrigger.Entry();
+                entryBeginDrag.eventID = UnityEngine.EventSystems.EventTriggerType.BeginDrag;
+                entryBeginDrag.callback.AddListener((_e) =>
+                {
+                    onSeekerBeginDrag();
+                });
+                eventTrigger.triggers.Add(entryBeginDrag);
 
-            // 创建结束拖拽事件
-            UnityEngine.EventSystems.EventTrigger.Entry entryEndDrag = new UnityEngine.EventSystems.EventTrigger.Entry();
-            entryEndDrag.eventID = UnityEngine.EventSystems.EventTriggerType.EndDrag;
-            entryEndDrag.callback.AddListener((_e) =>
-            {
-                onSeekerEndDrag();
-            });
-            eventTrigger.triggers.Add(entryEndDrag);
-            uiReference_.seeker.onValueChanged.AddListener((_value) =>
-            {
-                onSeekerDrag();
-            });
+                // 创建结束拖拽事件
+                UnityEngine.EventSystems.EventTrigger.Entry entryEndDrag = new UnityEngine.EventSystems.EventTrigger.Entry();
+                entryEndDrag.eventID = UnityEngine.EventSystems.EventTriggerType.EndDrag;
+                entryEndDrag.callback.AddListener((_e) =>
+                {
+                    onSeekerEndDrag();
+                });
+                eventTrigger.triggers.Add(entryEndDrag);
+                uiReference_.seeker.onValueChanged.AddListener((_value) =>
+                {
+                    onSeekerDrag();
+                });
+            }
+            uiReference_.seeker.transform.Find("Handle Slide Area").gameObject.SetActive(_style.toolBar.videoAction.drag);
 
             // 播放和暂停事件
             uiReference_.btnPlay = uiReference_.toolbar.transform.Find("btnPlay").GetComponent<Button>();
