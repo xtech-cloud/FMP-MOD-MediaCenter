@@ -5,6 +5,11 @@
       slot: ui根节点在主Canvas中的挂载路径
     -->
   <UI visible="true" slot="[root]"/>
+  <!-- World
+      visible: 预加载完成后是否显示
+      slot: 世界根节点在主世界中的挂载路径
+    -->
+  <World visible="true" slot="[root]"/>
   <!-- 远程过程调用
       address: 地址
     -->
@@ -32,6 +37,7 @@
       ToolBar.VideoLoop.mode:  视频初始循环模式，可选值为（none, single）
       ToolBar.VideoLoop.visible:  视频循环按钮是否可见
       ToolBar.VideoAction.drag:  是否允许视频进度条拖动操作
+      ToolBar.ImageZoom.maxIn: 图片的最大放大倍数，0为不限制
     -->
   <Styles>
     <Style name="default" primaryColor="#DAB757FF">
@@ -56,6 +62,7 @@
         <VideoProgress width="300"/>
         <VideoLoop mode="none" visible="false"/>
         <VideoAction drag="false"/>
+        <ImageZoom maxIn="3.0"/>
       </ToolBar>
     </Style>
   </Styles>

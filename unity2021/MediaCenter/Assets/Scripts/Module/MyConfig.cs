@@ -89,6 +89,12 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public bool visible { get; set; } = false;
         }
 
+        public class ImageZoom
+        {
+            [XmlAttribute("maxIn")]
+            public float maxIn { get; set; } = 0;
+        }
+
         public class ToolBar
         {
             [XmlElement("VideoProgress")]
@@ -97,6 +103,8 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public VideoLoop videoLoop { get; set; } = new VideoLoop();
             [XmlElement("VideoAction")]
             public VideoAction videoAction { get; set; } = new VideoAction();
+            [XmlElement("ImageZoom")]
+            public ImageZoom imageZoom { get; set; } = new ImageZoom();
         }
 
         public class Background

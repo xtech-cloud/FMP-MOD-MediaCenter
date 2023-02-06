@@ -133,6 +133,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             uiReference_.tgTabDocument = rootUI.transform.Find("Home/tabbar/tgDocument").GetComponent<Toggle>();
             viewerImage_ = new ImageViewer();
             viewerImage_.Setup(rootUI, contentReader_, fileReader_);
+            viewerImage_.maxZoomIn = style_.toolBar.imageZoom.maxIn;
             viewerVideo_ = new VideoViewer();
             viewerVideo_.Setup(mono_, rootUI, contentReader_, fileReader_, style_);
 

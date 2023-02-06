@@ -27,6 +27,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public Button btnZoomIn;
         }
         public Action onRendererClick;
+        public float maxZoomIn { get; set; } = 0f;
 
         private UiReference uiReference_ = new UiReference();
         private ContentReader contentReader_;
@@ -59,6 +60,8 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             uiReference_.btnZoomIn.onClick.AddListener(() =>
             {
                 scale_ += 0.2f;
+                if(maxZoomIn > 0 && scale_ > maxZoomIn)
+                    scale_ = maxZoomIn;
                 uiReference_.renderer.rectTransform.sizeDelta = originSizeDelta_ * scale_;
             });
             uiReference_.btnZoomOut = uiReference_.toolbar.Find("btnZoomOut").GetComponent<Button>();
