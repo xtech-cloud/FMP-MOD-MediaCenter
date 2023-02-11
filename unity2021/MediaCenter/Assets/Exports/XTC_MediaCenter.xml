@@ -5,6 +5,11 @@
       slot: ui根节点在主Canvas中的挂载路径
     -->
   <UI visible="true" slot="[root]"/>
+  <!-- World
+      visible: 预加载完成后是否显示
+      slot: 世界根节点在主世界中的挂载路径
+    -->
+  <World visible="true" slot="[root]"/>
   <!-- 远程过程调用
       address: 地址
     -->
@@ -13,6 +18,9 @@
       name: 名称
       primaryColor: 主色系
       PageHomeBackground: 主页背景
+      PageTabbar.PageTabImage.visible: 图片标签的显示方式，可选值为(auto，alwaysShow，alwaysHide)，auto在有内容时显示，无内容时隐藏，alwaysShow总是显示，alwaysHide总是隐藏
+      PageTabbar.PageTabVideo.visible: 视频标签的显示方式，可选值为(auto，alwaysShow，alwaysHide)，auto在有内容时显示，无内容时隐藏，alwaysShow总是显示，alwaysHide总是隐藏
+      PageTabbar.PageTabDocument.visible: 文档标签的显示方式，可选值为(auto，alwaysShow，alwaysHide)，auto在有内容时显示，无内容时隐藏，alwaysShow总是显示，alwaysHide总是隐藏
       Summary: 简介说明文字
       Summary.beginDelay: 开始滚动前的延迟时间
       Summary.endDelay: 结束滚动后的延时时间
@@ -28,10 +36,17 @@
       ToolBar.VideoProgress.width:  视频进度条长度
       ToolBar.VideoLoop.mode:  视频初始循环模式，可选值为（none, single）
       ToolBar.VideoLoop.visible:  视频循环按钮是否可见
+      ToolBar.VideoAction.drag:  是否允许视频进度条拖动操作
+      ToolBar.ImageZoom.maxIn: 图片的最大放大倍数，0为不限制
     -->
   <Styles>
     <Style name="default" primaryColor="#DAB757FF">
       <PageHomeBackground visible="true" image="pageHome_background_default.png"/>
+      <PageTabbar>
+        <PageTabImage visible="auto"/>
+        <PageTabVideo visible="auto"/>
+        <PageTabDocument visible="auto"/>
+      </PageTabbar>
       <Summary beginDelay="5" endDelay="5" speed="30"/>
       <HomeContainer row="3">
         <Padding left="36" right="36" top="36" bottom="36"/>
@@ -46,6 +61,8 @@
       <ToolBar>
         <VideoProgress width="300"/>
         <VideoLoop mode="none" visible="false"/>
+        <VideoAction drag="false"/>
+        <ImageZoom maxIn="3.0"/>
       </ToolBar>
     </Style>
   </Styles>
@@ -53,9 +70,10 @@
       uid: 实例的唯一ID
       style: 使用的样式名
       uiSlot: ui的挂载路径
+      worldSlot: 3D世界的挂载路径
     -->
   <Instances>
-    <Instance uid="default" style="default" uiSlot=""/>
+    <Instance uid="default" style="default" uiSlot="" worldSlot=""/>
   </Instances>
   <!-- 预加载 -->
   <Preload>

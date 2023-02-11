@@ -74,6 +74,13 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public int width { get; set; } = 100;
         }
 
+        public class VideoAction
+        {
+            [XmlAttribute("drag")]
+            public bool drag { get; set; } = false;
+        }
+
+
         public class VideoLoop
         {
             [XmlAttribute("mode")]
@@ -82,12 +89,22 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public bool visible { get; set; } = false;
         }
 
+        public class ImageZoom
+        {
+            [XmlAttribute("maxIn")]
+            public float maxIn { get; set; } = 0;
+        }
+
         public class ToolBar
         {
             [XmlElement("VideoProgress")]
             public VideoProgress videoProgress { get; set; } = new VideoProgress();
             [XmlElement("VideoLoop")]
             public VideoLoop videoLoop { get; set; } = new VideoLoop();
+            [XmlElement("VideoAction")]
+            public VideoAction videoAction { get; set; } = new VideoAction();
+            [XmlElement("ImageZoom")]
+            public ImageZoom imageZoom { get; set; } = new ImageZoom();
         }
 
         public class Background
@@ -98,6 +115,37 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public string image { get; set; } = "";
         }
 
+        public class PageTab
+        {
+            [XmlAttribute("visible")]
+            public string visible { get; set; } = "";
+        }
+
+        public class PageTabImage : PageTab
+        {
+
+        }
+
+        public class PageTabVideo : PageTab
+        {
+
+        }
+
+        public class PageTabDocument : PageTab
+        {
+
+        }
+
+        public class PageTabbar
+        {
+            [XmlElement("PageTabImage")]
+            public PageTabImage image { get; set; } = new PageTabImage();
+            [XmlElement("PageTabVideo")]
+            public PageTabVideo video { get; set; } = new PageTabVideo();
+            [XmlElement("PageTabDocument")]
+            public PageTabDocument document { get; set; } = new PageTabDocument();
+        }
+
         public class Style
         {
             [XmlAttribute("name")]
@@ -106,6 +154,8 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             public string primaryColor { get; set; } = "";
             [XmlElement("PageHomeBackground")]
             public Background pageHomeBackground { get; set; } = new Background();
+            [XmlElement("PageTabbar")]
+            public PageTabbar pageTabbar { get; set; } = new PageTabbar();
             [XmlElement("Summary")]
             public Summary summary { get; set; } = new Summary();
             [XmlElement("HomeContainer")]
