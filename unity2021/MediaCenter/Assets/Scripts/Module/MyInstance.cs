@@ -165,7 +165,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             fileObjectsPool_.Prepare();
             viewerImage_.HandleInstanceOpened();
             viewerVideo_.HandleInstanceOpened();
-            Refresh(_source, _uri);
+            refresh(_source, _uri);
         }
 
         /// <summary>
@@ -188,6 +188,30 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
 
         public void Refresh(string _source, string _uri)
         {
+            if (!isOpened_)
+            {
+                HandleOpened(_source, _uri);
+                return;
+            }
+            refresh(_source, _uri);
+        }
+
+        public void Clean()
+        {
+            foreach (var obj in uiReference_.homeEntryCloneS)
+            {
+                GameObject.DestroyImmediate(obj);
+            }
+            uiReference_.homeEntryCloneS.Clear();
+            foreach (var obj in uiReference_.viewerEntryCloneS)
+            {
+                GameObject.DestroyImmediate(obj);
+            }
+            uiReference_.viewerEntryCloneS.Clear();
+        }
+
+        private void refresh(string _source, string _uri)
+        {
             uiReference_.homePage.gameObject.SetActive(true);
             uiReference_.viewerPage.gameObject.SetActive(false);
             rootUI.gameObject.SetActive(true);
@@ -207,20 +231,6 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             }
 
             coroutineScrollSummary_ = mono_.StartCoroutine(scrollSummary());
-        }
-
-        public void Clean()
-        {
-            foreach (var obj in uiReference_.homeEntryCloneS)
-            {
-                GameObject.DestroyImmediate(obj);
-            }
-            uiReference_.homeEntryCloneS.Clear();
-            foreach (var obj in uiReference_.viewerEntryCloneS)
-            {
-                GameObject.DestroyImmediate(obj);
-            }
-            uiReference_.viewerEntryCloneS.Clear();
         }
 
         private void applyStyle()
