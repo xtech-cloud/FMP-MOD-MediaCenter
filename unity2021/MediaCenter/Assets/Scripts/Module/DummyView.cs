@@ -55,13 +55,13 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                 RectTransform rt = _instance.rootUI.GetComponent<RectTransform>();
                 rt.anchoredPosition = Vector2.zero;
                 rt.sizeDelta = Vector2.zero;
-                _instance.rootUI.SetActive(true);
+                //_instance.rootUI.SetActive(true);
 
                 _instance.rootWorld.transform.SetParent(worldSlot.transform);
                 _instance.rootWorld.transform.localPosition = Vector3.zero;
                 _instance.rootWorld.transform.localRotation = Quaternion.identity;
                 _instance.rootWorld.transform.localScale = Vector3.one;
-                _instance.rootWorld.SetActive(true);
+                //_instance.rootWorld.SetActive(true);
             });
         }
 
@@ -84,14 +84,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                 getLogger().Exception(ex);
             }
 
-            MyInstance instance;
-            if(!runtime.instances.TryGetValue(uid, out instance))
-            {
-                getLogger().Error("instance not found");
-                return;
-            }
-
-            instance.Refresh(source, uri);
+            runtime.OpenInstanceAsync(uid, source, uri, 0f);
         }
     }
 }

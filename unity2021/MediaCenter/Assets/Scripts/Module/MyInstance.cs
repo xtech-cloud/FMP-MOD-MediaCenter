@@ -159,12 +159,13 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
         /// </remarks>
         public void HandleOpened(string _source, string _uri)
         {
-            if (isOpened_)
-                return;
-            isOpened_ = true;
-            fileObjectsPool_.Prepare();
-            viewerImage_.HandleInstanceOpened();
-            viewerVideo_.HandleInstanceOpened();
+            if (!isOpened_)
+            {
+                isOpened_ = true;
+                fileObjectsPool_.Prepare();
+                viewerImage_.HandleInstanceOpened();
+                viewerVideo_.HandleInstanceOpened();
+            }
             refresh(_source, _uri);
         }
 
@@ -184,16 +185,6 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                 mono_.StopCoroutine(coroutineScrollSummary_);
                 coroutineScrollSummary_ = null;
             }
-        }
-
-        public void Refresh(string _source, string _uri)
-        {
-            if (!isOpened_)
-            {
-                HandleOpened(_source, _uri);
-                return;
-            }
-            refresh(_source, _uri);
         }
 
         public void Clean()

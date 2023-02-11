@@ -75,6 +75,22 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
         }
 
         /// <summary>
+        /// 调试嵌入
+        /// </summary>
+        /// <param name="_uid">实例的uid</param>
+        /// <param name="_source">内容的源的类型</param>
+        /// <param name="_uri">内容的地址</param>
+        public void __DebugInlay(string _uid, string _style)
+        {
+            var data = new Dictionary<string, object>();
+            data["uid"] = _uid;
+            data["style"] = _style;
+            data["uiSlot"] = GameObject.Find("MainCanvas/[root]");
+            data["worldSlot"] = GameObject.Find("MainWorld/[root]");
+            modelDummy_.Publish(MySubject.Inlay, data);
+        }
+
+        /// <summary>
         /// 调试刷新
         /// </summary>
         /// <param name="_uid">实例的uid</param>

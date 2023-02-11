@@ -60,6 +60,11 @@ public class Root : RootBase
         {
             entry_.__DebugDelete("test");
         }
+
+        if (GUI.Button(new Rect(0, 210, 60, 30), "Inlay"))
+        {
+            entry_.__DebugInlay("test", "default");
+        }
     }
 }
 
