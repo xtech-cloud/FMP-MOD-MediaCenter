@@ -41,17 +41,22 @@ public class Root : RootBase
             entry_.__DebugShow("test", 0.5f);
         }
 
-        if (GUI.Button(new Rect(0, 90, 60, 30), "Hide"))
+        if (GUI.Button(new Rect(0, 90, 60, 30), "Refresh"))
+        {
+            entry_.__DebugRefresh("test", "assloud://", "XTC.MediaCenter/_resources/1.mc");
+        }
+
+        if (GUI.Button(new Rect(0, 120, 60, 30), "Hide"))
         {
             entry_.__DebugHide("test", 0.5f);
         }
 
-        if (GUI.Button(new Rect(0, 120, 60, 30), "Close"))
+        if (GUI.Button(new Rect(0, 150, 60, 30), "Close"))
         {
             entry_.__DebugClose("test", 0.5f);
         }
 
-        if (GUI.Button(new Rect(0, 150, 60, 30), "Delete"))
+        if (GUI.Button(new Rect(0, 180, 60, 30), "Delete"))
         {
             entry_.__DebugDelete("test");
         }

@@ -161,15 +161,39 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             if (isOpened_)
                 return;
             isOpened_ = true;
+            fileObjectsPool_.Prepare();
+            viewerImage_.HandleInstanceOpened();
+            viewerVideo_.HandleInstanceOpened();
+            Refresh(_source, _uri);
+        }
+
+        /// <summary>
+        /// 当被关闭时
+        /// </summary>
+        public void HandleClosed()
+        {
+            isOpened_ = false;
+            rootUI.gameObject.SetActive(false);
+            Clean();
+
+            fileObjectsPool_.Dispose();
+
+            if (null != coroutineScrollSummary_)
+            {
+                mono_.StopCoroutine(coroutineScrollSummary_);
+                coroutineScrollSummary_ = null;
+            }
+        }
+
+        public void Refresh(string _source, string _uri)
+        {
             uiReference_.homePage.gameObject.SetActive(true);
             uiReference_.viewerPage.gameObject.SetActive(false);
             rootUI.gameObject.SetActive(true);
             viewerContainerVisible = false;
 
-            fileObjectsPool_.Prepare();
+            Clean();
 
-            viewerImage_.HandleInstanceOpened();
-            viewerVideo_.HandleInstanceOpened();
             switchViewerContainerVisible();
             System.Action<string> handler;
             if (openHandlerS_.TryGetValue(_source, out handler))
@@ -184,13 +208,8 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             coroutineScrollSummary_ = mono_.StartCoroutine(scrollSummary());
         }
 
-        /// <summary>
-        /// 当被关闭时
-        /// </summary>
-        public void HandleClosed()
+        public void Clean()
         {
-            isOpened_ = false;
-            rootUI.gameObject.SetActive(false);
             foreach (var obj in uiReference_.homeEntryCloneS)
             {
                 GameObject.DestroyImmediate(obj);
@@ -201,14 +220,6 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                 GameObject.DestroyImmediate(obj);
             }
             uiReference_.viewerEntryCloneS.Clear();
-
-            fileObjectsPool_.Dispose();
-
-            if (null != coroutineScrollSummary_)
-            {
-                mono_.StopCoroutine(coroutineScrollSummary_);
-                coroutineScrollSummary_ = null;
-            }
         }
 
         private void applyStyle()

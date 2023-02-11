@@ -83,7 +83,15 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             {
                 getLogger().Exception(ex);
             }
-            runtime.OpenInstanceAsync(uid, source, uri, 0);
+
+            MyInstance instance;
+            if(!runtime.instances.TryGetValue(uid, out instance))
+            {
+                getLogger().Error("instance not found");
+                return;
+            }
+
+            instance.Refresh(source, uri);
         }
     }
 }

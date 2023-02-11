@@ -39,6 +39,8 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             var data = new Dictionary<string, object>();
             data["uid"] = _uid;
             data["style"] = _style;
+            data["uiSlot"] = "MainCanvas/[root]";
+            data["worldSlot"] = "MainWorld/[root]";
             modelDummy_.Publish(MySubjectBase.Create, data);
         }
 
@@ -70,6 +72,21 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             data["uid"] = _uid;
             data["delay"] = _delay;
             modelDummy_.Publish(MySubjectBase.Show, data);
+        }
+
+        /// <summary>
+        /// 调试刷新
+        /// </summary>
+        /// <param name="_uid">实例的uid</param>
+        /// <param name="_source">内容的源的类型</param>
+        /// <param name="_uri">内容的地址</param>
+        public void __DebugRefresh(string _uid, string _source, string _uri)
+        {
+            var data = new Dictionary<string, object>();
+            data["uid"] = _uid;
+            data["source"] = _source;
+            data["uri"] = _uri;
+            modelDummy_.Publish(MySubject.Refresh, data);
         }
 
         /// <summary>
