@@ -61,7 +61,7 @@
       <ToolBar>
         <VideoProgress width="300"/>
         <VideoLoop mode="none" visible="false"/>
-        <VideoAction drag="false"/>
+        <VideoAction drag="true"/>
         <ImageZoom maxIn="3.0"/>
       </ToolBar>
     </Style>
@@ -73,7 +73,7 @@
       worldSlot: 3D世界的挂载路径
     -->
   <Instances>
-    <Instance uid="default" style="default" uiSlot="" worldSlot=""/>
+    <Instance uid="default" style="default" uiRoot="" uiSlot="" worldRoot="" worldSlot=""/>
   </Instances>
   <!-- 预加载 -->
   <Preload>

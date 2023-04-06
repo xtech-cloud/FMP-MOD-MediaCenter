@@ -96,10 +96,24 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                     onSeekerEndDrag();
                 });
                 eventTrigger.triggers.Add(entryEndDrag);
-                uiReference_.seeker.onValueChanged.AddListener((_value) =>
+
+                // 创建拖拽事件
+                UnityEngine.EventSystems.EventTrigger.Entry entryDrag = new UnityEngine.EventSystems.EventTrigger.Entry();
+                entryDrag.eventID = UnityEngine.EventSystems.EventTriggerType.Drag;
+                entryDrag.callback.AddListener((_e) =>
                 {
                     onSeekerDrag();
                 });
+                eventTrigger.triggers.Add(entryDrag);
+
+                // 创建点击事件（不能使用PointerClick事件，PointerClick是在PointerUp后触发）
+                UnityEngine.EventSystems.EventTrigger.Entry entryClick = new UnityEngine.EventSystems.EventTrigger.Entry();
+                entryClick.eventID = UnityEngine.EventSystems.EventTriggerType.PointerDown;
+                entryClick.callback.AddListener((_e) =>
+                {
+                    onSeekerDrag();
+                });
+                eventTrigger.triggers.Add(entryClick);
             }
             uiReference_.seeker.transform.Find("Handle Slide Area").gameObject.SetActive(_style.toolBar.videoAction.drag);
 
@@ -240,7 +254,6 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             {
                 uiReference_._mediaPlayer.Control.Pause();
             }
-            onSeekerDrag();
         }
 
         private void onSeekerEndDrag()
@@ -248,16 +261,12 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             if (wasPlayingOnScrub_)
             {
                 uiReference_._mediaPlayer.Control.Play();
-                wasPlayingOnScrub_ = false;
             }
         }
 
         private void onSeekerDrag()
         {
-            if (uiReference_.seeker.value != videoSeekValue_)
-            {
-                uiReference_._mediaPlayer.Control.Seek(uiReference_.seeker.value * uiReference_._mediaPlayer.Info.GetDurationMs());
-            }
+            uiReference_._mediaPlayer.Control.Seek(uiReference_.seeker.value * uiReference_._mediaPlayer.Info.GetDurationMs());
         }
 
         private IEnumerator update()
