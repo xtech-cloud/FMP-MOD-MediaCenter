@@ -34,6 +34,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                 public string thumbnail = "";
                 public string file = "";
                 public string summary = "";
+                public string title = "";
             }
             public Entry[] entryS = new Entry[0];
         }
@@ -361,6 +362,7 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
                 var entry = new MetaSchema.Entry();
                 entryS.Add(entry);
                 entry.summary = "";
+                entry.title = "";
                 entry.thumbnail = "";
                 entry._text = Path.GetFileName(file);
                 entry._source = "file://";
@@ -478,8 +480,11 @@ namespace XTC.FMP.MOD.MediaCenter.LIB.Unity
             uiReference_.btnPrev.interactable = index > 0;
             uiReference_.btnNext.interactable = index >= 0 && index < filterEntryS.Count - 1;
 
-            uiReference_.summary.transform.Find("Viewport/Content/text").GetComponent<Text>().text = activeEntry_.summary;
-            uiReference_.summary.gameObject.SetActive(!string.IsNullOrEmpty(activeEntry_.summary));
+            string text = activeEntry_.summary;
+            if (string.IsNullOrEmpty(text))
+                text = activeEntry_.title;
+            uiReference_.summary.transform.Find("Viewport/Content/text").GetComponent<Text>().text = text;
+            uiReference_.summary.gameObject.SetActive(!string.IsNullOrEmpty(text));
             summaryBeginDelayTimer_ = 0f;
             summaryEndDelayTimer_ = 0f;
 
